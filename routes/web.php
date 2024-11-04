@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\IncidenciaController;
+use App\Http\Controllers\UserController;
 
 Route::view('/', 'welcome')->middleware('guest'); // Redirige a usuarios no autenticados
 
@@ -22,7 +23,6 @@ Route::view('/profile', 'profile')
 
     // Rutas para la gestión de incidencias
 Route::middleware(['auth'])->group(function () {
-    
     Route::get('/incidencias', [IncidenciaController::class, 'index'])->name('incidencias.index');
     Route::get('/incidencias/create', [IncidenciaController::class, 'create'])->name('incidencias.create');
     Route::post('/incidencias', [IncidenciaController::class, 'store'])->name('incidencias.store');
@@ -30,5 +30,17 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/incidencias/{incidencia}', [IncidenciaController::class, 'update'])->name('incidencias.update');
     Route::delete('/incidencias/{incidencia}', [IncidenciaController::class, 'destroy'])->name('incidencias.destroy');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/usuarios/soporte', [UserController::class, 'showUsers'])->name('usuarios.soporte');
+    Route::get('/usuarios/incidencias/{id}', [UserController::class, 'showUserIncidencias'])->name('usuarios.incidencias');
+    Route::get('/usuarios/{user}/incidencias/create', [IncidenciaController::class, 'createUserInc'])->name('usuarios.incidencias.create');
+    Route::post('/usuarios/incidencias', [IncidenciaController::class, 'storeUserInc'])->name('usuarios.incidencias.store');
+    Route::get('/usuarios/incidencia/{incidencia}/edit', [IncidenciaController::class, 'editUserInc'])->name('usuarios.incidencias.edit');
+    Route::put('/usuarios/incidencias/{incidencia}', [IncidenciaController::class, 'updateUserInc'])->name('usuarios.incidencias.update');
+    Route::delete('/usuarios/incidencias/{incidencia}', [IncidenciaController::class, 'destroyUserInc'])->name('usuarios.incidencias.destroy');
+});
+
+
 
 require __DIR__.'/auth.php';

@@ -1,10 +1,18 @@
 <x-app-layout>
-    <div class="overflow-x-auto">
+    <div x-data="notification()" x-init="init()" class="overflow-x-auto">
+        <!-- Componente de Notificación -->
+        <div x-show="visible" x-transition class="fixed top-0 right-0 mt-4 mr-4">
+            <div class="bg-green-500 text-white p-4 rounded shadow">
+                <span x-text="message"></span>
+            </div>
+        </div>
+
         <table class="min-w-full mt-4 border-collapse border border-gray-200">
             <thead>
                 <tr>
-                    <th class="px-4 py-2 border border-gray-300">Título</th>
+                    <th class="px-4 py-2 border border-gray-300">Incidencia</th>
                     <th class="px-4 py-2 border border-gray-300">Descripción</th>
+                    <th class="px-4 py-2 border border-gray-300">Estado</th>
                     <th class="px-4 py-2 border border-gray-300">Asignado a</th>
                     <th class="px-4 py-2 border border-gray-300">Acciones</th>
                 </tr>
@@ -14,8 +22,8 @@
                     <tr>
                         <td class="border px-4 py-2">{{ $incidencia->titulo }}</td>
                         <td class="border px-4 py-2">{{ $incidencia->descripcion }}</td>
+                        <td class="border px-4 py-2">{{ $incidencia->estado }}</td>
                         <td class="border px-4 py-2">
-                            {{-- Verifica si hay un usuario asignado y muestra su nombre --}}
                             {{ $incidencia->asignadoA ? $incidencia->asignadoA->name : 'No asignado' }}
                         </td>
                         <td class="border px-4 py-2 flex space-x-2 ">
@@ -32,22 +40,31 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M9 6v14a2 2 0 002 2h2a2 2 0 002-2V6M4 6l2-2h12l2 2H4z" />
                                     </svg>
-                                    
                                     Eliminar
                                 </button>
                             </form>
                         </td>
                     </tr>
                 @endforeach
-
-                @if (session('success'))
-                    <tr>
-                        <td colspan="4" class="bg-green-500 text-white p-4 mb-4 rounded">
-                            {{ session('success') }}
-                        </td>
-                    </tr>
-                @endif
             </tbody>
         </table>
     </div>
+
+    <script>
+        function notification() {
+            return {
+                message: "{{ session('success') }}",
+                visible: false,
+                init() {
+                    if (this.message) {
+                        this.visible = true;
+                        setTimeout(() => {
+                            this.visible = false;
+                        }, 3000); 
+                    }
+                }
+            }
+        }
+    </script>
+
 </x-app-layout>

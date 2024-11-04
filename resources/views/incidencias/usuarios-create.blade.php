@@ -9,8 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-md rounded-lg overflow-hidden">
                 <div class="p-6">
-                    <form action="{{ route('incidencias.store') }}" method="POST">
-                        @csrf
+                    <form action="{{ route('usuarios.incidencias.store', $user) }}" method="POST">                        @csrf
                        
                         <div>
                             <label for="titulo" class="block font-medium text-gray-700">Título</label>
@@ -32,13 +31,9 @@
                         </div>
 
                         <div class="mt-4">
-                            <label for="assigned_to" class="block font-medium text-gray-700">Asignado a</label>
-                            <select name="assigned_to" id="assigned_to" class="mt-1 block w-full border-gray-300 rounded">
-                                <option value="">Sin asignar</option>
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                @endforeach
-                            </select>
+                            
+                            <input type="hidden" name="assigned_to" value="{{ $user }}">
+
                         </div>
 
                         <div class="mt-4">
