@@ -116,23 +116,35 @@ class UserController extends Controller {
 
     public function showUserIncidencias($id)
     {
-        $user = User::findOrFail($id);
-        $incidencias = Incidencia::where('assigned_to', $user->id)->get();
+        $authenticatedUser = auth()->user();
+        
+        if ($authenticatedUser->id != $id) {
+            abort(403, 'No tienes permiso para ver estas incidencias');
+        }
+
+        $incidencias = Incidencia::where('assigned_to', $authenticatedUser->id)->get();
 
         return view('admin.detalle-usuarios', [
-            'user' => $user,
+            'user' => $authenticatedUser,
             'incidencias' => $incidencias,
         ]);
     }
 
+
     public function createUser()
     {
+        $user = auth()->user();
+        if (!$user->hasRole('admin')) {
+            abort(403, 'No tienes permiso para crear usuarios');
+        }
         return view('admin.crear-usuario');
     }
 
     public function storeUser(Request $request) {
         $user = auth()->user();
-    
+        if (!$user->hasRole('admin')) {
+            abort(403, 'No tienes permiso para guardar usuarios');
+        }
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',

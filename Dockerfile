@@ -18,11 +18,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copia el código de la aplicación
 WORKDIR /var/www
-COPY src/ .
+COPY app/ ./
 
-# Otorga permisos de escritura al almacenamiento
-RUN chown -R www-data:www-data /var/www/storage
-RUN chmod -R 775 /var/www/storage
+
+# Crea el directorio storage si no existe y establece permisos
+RUN mkdir -p /var/www/storage && \
+    chown -R www-data:www-data /var/www/storage && \
+    chmod -R 775 /var/www/storage
 
 # Expone el puerto 9000 para PHP-FPM
 EXPOSE 9000

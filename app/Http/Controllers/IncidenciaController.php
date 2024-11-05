@@ -26,9 +26,12 @@ class IncidenciaController extends Controller
 
     public function create()
     {
-        $user = auth()->user(); 
         $users = User::all(); 
+        $user = auth()->user();
 
+        if (!$user->hasRole('admin')) { 
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         if (!$user->hasRole('admin')) {
             $users = $users->where('id', $user->id); 
         }
@@ -43,7 +46,11 @@ class IncidenciaController extends Controller
 
     public function store(Request $request)
     {
+        $user = auth()->user();
 
+        if (!$user->hasRole('admin')) { 
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
@@ -107,6 +114,11 @@ class IncidenciaController extends Controller
 
     public function update(Request $request, $id)
     {
+        $user = auth()->user();
+
+        if (!$user->hasRole('admin')) { 
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
@@ -149,8 +161,12 @@ class IncidenciaController extends Controller
 
     public function destroy(Incidencia $incidencia)
     {
+        $user = auth()->user();
+
+        if (!$user->hasRole('admin')) { 
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         
-        // Lógica para eliminar la incidencia
         $incidencia->delete();
 
         return redirect()->route('incidencias.index')->with('success', 'Incidencia eliminada con éxito.');
@@ -158,7 +174,6 @@ class IncidenciaController extends Controller
 
     public function destroyUserInc(Incidencia $incidencia)
     {    
-        // Obtener el ID del usuario asignado para redirección
         $userId = $incidencia->assigned_to;
 
         $incidencia->delete();
