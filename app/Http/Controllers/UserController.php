@@ -124,4 +124,41 @@ class UserController extends Controller {
             'incidencias' => $incidencias,
         ]);
     }
+
+    public function createUser()
+    {
+        return view('admin.crear-usuario');
+    }
+
+    public function storeUser(Request $request) {
+        $user = auth()->user();
+    
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|string|in:admin,soporte',
+        ]);
+    
+        $data['password'] = bcrypt($data['password']);
+        $newUser = User::create($data);
+    
+        $newUser->assignRole($data['role']);
+    
+        return redirect()->route('usuarios.soporte')->with('success', 'Usuario creado correctamente.');
+    }
+
+    public function destroyUser($id) {
+        $user = auth()->user();
+
+        if (!$user->hasRole('admin')) {
+            return redirect()->route('usuarios.soporte')->with('error', 'No tienes permisos para realizar esta acción.');
+        }
+  
+        $userToDelete = User::findOrFail($id);
+        $userToDelete->delete();
+    
+        return redirect()->route('usuarios.soporte')->with('success', 'Usuario eliminado correctamente.');
+    }
+    
 }

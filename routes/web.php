@@ -41,6 +41,13 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/usuarios/incidencias/{incidencia}', [IncidenciaController::class, 'destroyUserInc'])->name('usuarios.incidencias.destroy');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/usuarios/create', [UserController::class, 'createUser'])->name('usuarios.create');
+    Route::post('/usuarios', [UserController::class, 'storeUser'])->name('usuarios.store');
+    Route::delete('/usuarios/{id}', [UserController::class, 'destroyUser'])->name('usuarios.destroy');
+});
+
+
 
 
 require __DIR__.'/auth.php';
