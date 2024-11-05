@@ -35,6 +35,7 @@
                             </select>
                         </div>
                         
+                        
 
                         <div class="mb-4">
                             <label for="estado" class="block font-medium text-gray-700">Estado</label>

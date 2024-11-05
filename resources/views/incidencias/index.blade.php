@@ -1,4 +1,15 @@
 <x-app-layout>
+    <x-slot name="header">
+        <h3 class="text-xl font-semibold mb-4 flex justify-between items-center">
+            {{ __('INCIDENCIAS') }}
+            <a href="{{ route('incidencias.create') }}" class="flex items-center bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600 transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Crear Incidencia
+            </a>
+        </h3>
+    </x-slot>
     <div x-data="notification()" x-init="init()" class="overflow-x-auto">
         <!-- Componente de Notificación -->
         <div x-show="visible" x-transition class="fixed top-0 right-0 mt-4 mr-4">

@@ -12,22 +12,34 @@ class IncidenciaController extends Controller
     
     public function index()
     {
-        $incidencias = Incidencia::with('asignadoA')->get();
+        $user = auth()->user(); 
+
+        if ($user->hasRole('admin')) {
+            $incidencias = Incidencia::with('asignadoA')->get();
+        } else {
+            
+            $incidencias = Incidencia::with('asignadoA')->where('assigned_to', $user->id)->get();
+        }
+
         return view('incidencias.index', compact('incidencias'));
     }
 
-
     public function create()
     {
+        $user = auth()->user(); 
         $users = User::all(); 
+
+        if (!$user->hasRole('admin')) {
+            $users = $users->where('id', $user->id); 
+        }
+
         return view('incidencias.create', compact('users'));
     }
 
     public function createUserInc( $user)
-{
-    return view('incidencias.usuarios-create', compact('user'));
-}
-
+    {
+        return view('incidencias.usuarios-create', compact('user'));
+    }
 
     public function store(Request $request)
     {
@@ -53,7 +65,6 @@ class IncidenciaController extends Controller
 
     public function storeUserInc(Request $request)
     {
-
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
@@ -73,11 +84,17 @@ class IncidenciaController extends Controller
         return redirect()->route('usuarios.incidencias' , ['id' => $incidencia->assigned_to])->with('success', 'Incidencia creada correctamente.');
     }
 
-
     public function edit($id)
     {
-        $incidencia = Incidencia::findOrFail($id);
-        $users = User::all(); // Obtener todos los usuarios
+        $user = auth()->user(); 
+        $incidencia = Incidencia::findOrFail($id); 
+
+        if (!$user->hasRole('admin') && $incidencia->assigned_to !== $user->id) {
+            abort(403, 'Acceso denegado'); 
+        }
+ 
+        $users = $user->hasRole('admin') ? User::all() : [$user];
+
         return view('incidencias.edit', compact('incidencia', 'users'));
     }
 
@@ -87,7 +104,6 @@ class IncidenciaController extends Controller
         $users = User::all(); // Obtener todos los usuarios
         return view('incidencias.usuarios-edit', compact('incidencia', 'users'));
     }
-
 
     public function update(Request $request, $id)
     {
@@ -131,7 +147,6 @@ class IncidenciaController extends Controller
         return redirect()->route('usuarios.incidencias', ['id' => $incidencia->assigned_to])->with('success', 'Incidencia actualizada correctamente.');
     }
 
-    
     public function destroy(Incidencia $incidencia)
     {
         
@@ -151,5 +166,4 @@ class IncidenciaController extends Controller
         return redirect()->route('usuarios.incidencias', ['id' => $userId])
             ->with('success', 'Incidencia eliminada con éxito.');
     }
-
 }
